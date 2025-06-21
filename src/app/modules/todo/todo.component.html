@@ -1,0 +1,145 @@
+<div class="container-fluid">
+  <!-- Header Controls -->
+  <div class="header-controls mb-3">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-success" (click)="addNewRow()">
+            <i class="fas fa-plus"></i> Add Row
+          </button>
+          <button type="button" class="btn btn-danger" (click)="deleteRow()" [disabled]="selectedRowIndex === null">
+            <i class="fas fa-trash"></i> Delete Row
+          </button>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="input-group">
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="New column name" 
+            [(ngModel)]="newColumnHeader"
+            (keyup.enter)="addNewColumn()"
+          >
+          <button type="button" class="btn btn-primary" (click)="addNewColumn()" [disabled]="isAddingColumn">
+            <i class="fas fa-columns"></i> {{ isAddingColumn ? 'Adding...' : 'Add Column' }}
+          </button>
+          <button type="button" class="btn btn-warning" (click)="deleteSelectedColumn()" [disabled]="selectedColumnIndex === null">
+            <i class="fas fa-minus"></i> Delete Column
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-12">
+        <small class="text-muted">
+          <strong>Keyboard Shortcuts:</strong> 
+          Ctrl+N: Add Row | 
+          Ctrl+Shift+N: Focus New Column | 
+          Delete: Delete Selected Row/Column |
+          Double-click headers to edit
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Excel Table -->
+  <div
+    class="table-responsive excel-table-wrapper table-container"
+    (document:keydown.delete)="handleDeleteKey()"
+    tabindex="0"
+  >
+    <table class="table excel-table">
+      <thead>
+        <tr>
+          @for (col of columns; track col.field; let headerColIndex = $index) {
+            <th
+              class="resizable-header"
+              [class.selected]="isCellSelected(-1, headerColIndex) || isColumnSelected(headerColIndex)"
+              (click)="selectColumn(headerColIndex)"
+              (dblclick)="startHeaderEditing(headerColIndex)"
+            >
+              @if (headerEditingIndex === headerColIndex) {
+                <input
+                  type="text"
+                  class="header-edit-input"
+                  [value]="editHeaderValue"
+                  (blur)="stopHeaderEditing()"
+                  (keyup.enter)="stopHeaderEditing()"
+                  (keyup.escape)="headerEditingIndex = null"
+                  (input)="updateHeaderTitle(headerColIndex, getInputValue($event))"
+                  autofocus
+                />
+              } @else {
+                <div class="header-content">
+                  <span class="header-text">{{ col.title }}</span>
+                  @if (col.field !== 'index') {
+                    <span class="header-edit-icon">
+                      <i class="fas fa-edit"></i>
+                    </span>
+                  }
+                </div>
+              }
+              <span class="resizer"></span>
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (todo of todos; track todo._id || todo.id; let rowIndex = $index) {
+          <tr
+            [class.row-selected]="isRowSelected(rowIndex)"
+            (click)="handleRowClick(rowIndex)"
+          >
+            @for (col of columns; track col.field; let colIndex = $index) {
+              <td
+                (keydown)="onCellKeydown($event, rowIndex, colIndex)"
+                tabindex="0"
+                (click)="handleCellClick(rowIndex, colIndex); $event.stopPropagation()"
+                [class.selected]="
+                  isCellSelected(rowIndex, colIndex) || isColumnSelected(colIndex)
+                "
+                [class.editing]="isCellEditing(rowIndex, colIndex)"
+                [class.index-cell]="col.field === 'index'"
+              >
+                <!-- Edit Mode -->
+                @if (isCellEditing(rowIndex, colIndex)) {
+                  <input
+                    type="text"
+                    [value]="cellEditValues.get(rowIndex + '-' + colIndex) || ''"
+                    (input)="updateCellEditValue(rowIndex, colIndex, $event)"
+                    (keydown.enter)="saveEdit()"
+                    (keydown.escape)="cancelEdit()"
+                    (keydown.delete)="clearCell(rowIndex, colIndex)"
+                    (blur)="saveEdit()"
+                    class="cell-edit-input"
+                    autofocus
+                  />
+                } @else {
+                  <!-- View Mode -->
+                  <span class="cell-content">
+                    {{ getCellValue(todo, col.field) }}
+                  </span>
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <!-- Empty State -->
+    @if (todos.length === 0) {
+      <div class="empty-state">
+        <div class="empty-state-content">
+          <i class="fas fa-table empty-state-icon"></i>
+          <h4>No data available</h4>
+          <p>Click "Add Row" to get started with your first entry.</p>
+          <button type="button" class="btn btn-primary" (click)="addNewRow()">
+            <i class="fas fa-plus"></i> Add Your First Row
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
