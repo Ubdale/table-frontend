@@ -14,10 +14,10 @@
       </div>
       <div class="col-md-6">
         <div class="input-group">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="New column name"
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="New column name" 
             [(ngModel)]="newColumnHeader"
             (keydown.enter)="addNewColumn()"
           >
@@ -33,9 +33,9 @@
     <div class="row mt-2">
       <div class="col-12">
         <small class="text-muted">
-          <strong>Keyboard Shortcuts:</strong>
-          Ctrl+N: Add Row |
-          Ctrl+Shift+N: Focus New Column |
+          <strong>Keyboard Shortcuts:</strong> 
+          Ctrl+N: Add Row | 
+          Ctrl+Shift+N: Focus New Column | 
           Delete: Delete Selected Row/Column |
           Double-click headers to edit
         </small>
@@ -112,7 +112,8 @@
                     (keydown.escape)="cancelEdit()"
                     (keydown.delete)="clearCell(rowIndex, colIndex)"
                     (blur)="saveEdit()"
-                    class="cell-edit-input border-0"
+                    class="cell-edit-input"
+                    autofocus
                   />
                 } @else {
                   <!-- View Mode -->

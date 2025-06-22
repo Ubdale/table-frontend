@@ -4,7 +4,8 @@ import {
   Component,
   OnInit,
   AfterViewInit,
-  HostListener
+  HostListener,
+  OnDestroy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +16,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './todo.component.html',
   styleUrl: './todo.component.scss',
 })
-export class TodoComponent implements OnInit, AfterViewInit {
+export class TodoComponent implements OnInit, AfterViewInit, OnDestroy {
   todos: Todo[] = [];
   tableConfig: TableConfig | null = null;
   columns: Column[] = [];
@@ -34,6 +35,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
   newColumnHeader: string = '';
   isAddingColumn: boolean = false;
   isDeletingRow: boolean = false;
+  
+  private columnUpdateTimeouts: Map<string, number> = new Map();
 
   constructor(
     private todosService: TodosService,
@@ -46,6 +49,14 @@ export class TodoComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.setupResizableColumns();
+  }
+
+  ngOnDestroy(): void {
+    // Clear all pending column update timeouts
+    this.columnUpdateTimeouts.forEach((timeout) => {
+      window.clearTimeout(timeout);
+    });
+    this.columnUpdateTimeouts.clear();
   }
 
   private loadTableConfig(): void {
@@ -175,10 +186,29 @@ export class TodoComponent implements OnInit, AfterViewInit {
     const column = this.columns[colIndex];
     const columnInConfig = this.tableConfig.columns.find(col => col.field === column.field);
     if (columnInConfig && (columnInConfig as any)._id) {
-      this.todosService.updateColumn((columnInConfig as any)._id, { width: column.width }).subscribe({
-        next: () => console.log(`Column width updated for ${column.title}`),
-        error: (err) => console.error('Failed to update column width:', err)
-      });
+      const columnId = (columnInConfig as any)._id;
+      const timeoutKey = `column_${columnId}`;
+      
+      // Clear existing timeout for this column
+      if (this.columnUpdateTimeouts.has(timeoutKey)) {
+        clearTimeout(this.columnUpdateTimeouts.get(timeoutKey)!);
+      }
+      
+      // Set new timeout to update after 500ms of no changes
+      const timeout = window.setTimeout(() => {
+        this.todosService.updateColumn(columnId, { width: column.width }).subscribe({
+          next: () => console.log(`Column width updated for ${column.title}`),
+          error: (err) => {
+            // Only log errors that are not 400 Bad Request (validation errors)
+            if (err.status !== 400) {
+              console.error('Failed to update column width:', err);
+            }
+          }
+        });
+        this.columnUpdateTimeouts.delete(timeoutKey);
+      }, 500);
+      
+      this.columnUpdateTimeouts.set(timeoutKey, timeout);
     }
   }
 
@@ -259,10 +289,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
       next: (response) => {
         console.log('Successfully deleted todo, response:', response);
         
-        // Remove the todo from the local array immediately
-        if (this.selectedRowIndex !== null) {
-          this.todos.splice(this.selectedRowIndex, 1);
-        }
+        // Reload todos from server to get updated serial numbers
+        this.loadTodos();
         
         // Reset selection
         this.selectedRowIndex = null;
@@ -405,8 +433,9 @@ export class TodoComponent implements OnInit, AfterViewInit {
 
   getCellValue(todo: Todo, field: string): string | number | null {
     if (field === 'serialNo') {
-      const value = (todo as any)['serialNo'] || this.todos.indexOf(todo) + 1;
-      return value;
+      // Always use the serial number from the database
+      const value = (todo as any)['serialNo'];
+      return value !== undefined ? value : null;
     }
     const value = (todo as any)[field] ?? '';
     return value;
@@ -553,10 +582,16 @@ export class TodoComponent implements OnInit, AfterViewInit {
       field = `${baseField}_${suffix++}`;
     }
     
+    // Calculate the correct order by finding the highest existing order
+    let maxOrder = -1;
+    if (this.columns.length > 0) {
+      maxOrder = Math.max(...this.columns.map(col => col.order || 0));
+    }
+    
     const newColumn: Column = {
       title: headerText,
       field: field,
-      order: this.columns.length,
+      order: maxOrder + 1,
       editable: true
     };
     
@@ -596,11 +631,18 @@ export class TodoComponent implements OnInit, AfterViewInit {
         this.isAddingColumn = false;
         // Restore the input value if the operation failed
         this.newColumnHeader = headerText;
-        if (err.error && err.error.includes('already exists')) {
-          alert('A column with this name already exists. Please use a different name.');
-        } else {
-          alert('Failed to add column. Please try again.');
+        
+        // Handle different error object structures
+        let errorMessage = 'Failed to add column. Please try again.';
+        if (err.error) {
+          if (typeof err.error === 'string' && err.error.includes('already exists')) {
+            errorMessage = 'A column with this name already exists. Please use a different name.';
+          } else if (typeof err.error === 'object' && err.error.error && err.error.error.includes('already exists')) {
+            errorMessage = 'A column with this name already exists. Please use a different name.';
+          }
         }
+        
+        alert(errorMessage);
         this.cdr.detectChanges();
       }
     });
