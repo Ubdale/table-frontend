@@ -33,6 +33,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
   
   newColumnHeader: string = '';
   isAddingColumn: boolean = false;
+  isDeletingRow: boolean = false;
 
   constructor(
     private todosService: TodosService,
@@ -240,6 +241,11 @@ export class TodoComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    if (this.isDeletingRow) {
+      console.log('Already deleting a row, ignoring request');
+      return;
+    }
+
     const todo = this.todos[this.selectedRowIndex];
     if (!todo?.id) {
       console.log('Selected todo has no ID, cannot delete');
@@ -247,20 +253,30 @@ export class TodoComponent implements OnInit, AfterViewInit {
     }
 
     console.log('Deleting row at index:', this.selectedRowIndex, 'with todo:', todo);
+    this.isDeletingRow = true;
 
     this.todosService.deleteTodo(todo.id).subscribe({
-      next: () => {
-        console.log('Successfully deleted todo');
+      next: (response) => {
+        console.log('Successfully deleted todo, response:', response);
         
-        this.loadTodos();
+        // Remove the todo from the local array immediately
+        if (this.selectedRowIndex !== null) {
+          this.todos.splice(this.selectedRowIndex, 1);
+        }
         
+        // Reset selection
         this.selectedRowIndex = null;
         this.selectedCell = null;
+        this.isDeletingRow = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Failed to delete row:', err);
-        alert('Failed to delete row. Please try again.');
+        console.error('Failed to delete row, error details:', err);
+        this.isDeletingRow = false;
+        // Only show error if it's not a successful deletion
+        if (err.status !== 200 && err.status !== 204) {
+          alert('Failed to delete row. Please try again.');
+        }
       },
     });
   }
@@ -525,6 +541,11 @@ export class TodoComponent implements OnInit, AfterViewInit {
     }
     
     const headerText = this.newColumnHeader.trim() || 'New Column';
+    if (!headerText) {
+      console.log('Empty column header, ignoring request');
+      return;
+    }
+    
     let field = headerText.toLowerCase().replace(/[^a-z0-9_]+/g, '_');
     let suffix = 1;
     let baseField = field;
@@ -542,6 +563,9 @@ export class TodoComponent implements OnInit, AfterViewInit {
     console.log('Adding new column:', newColumn);
     this.isAddingColumn = true;
     
+    // Clear the input immediately to prevent double submission
+    this.newColumnHeader = '';
+    
     this.todosService.addColumn(newColumn).subscribe({
       next: (updatedConfig) => {
         console.log('Column added successfully, updating config:', updatedConfig);
@@ -555,7 +579,6 @@ export class TodoComponent implements OnInit, AfterViewInit {
               id: todo._id || todo.id,
             }));
             console.log('All todos updated with new column');
-            this.newColumnHeader = '';
             this.isAddingColumn = false;
             setTimeout(() => this.setupResizableColumns(), 0);
             this.cdr.detectChanges();
@@ -571,6 +594,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
       error: (err) => {
         console.error('Failed to add column to database:', err);
         this.isAddingColumn = false;
+        // Restore the input value if the operation failed
+        this.newColumnHeader = headerText;
         if (err.error && err.error.includes('already exists')) {
           alert('A column with this name already exists. Please use a different name.');
         } else {

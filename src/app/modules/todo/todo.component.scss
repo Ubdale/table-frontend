@@ -29,7 +29,7 @@
   cursor: pointer;
   user-select: none;
   transition: all 0.2s ease;
-  
+
   &:hover {
     background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
   }
@@ -37,11 +37,11 @@
 
 .excel-table tbody tr {
   transition: background-color 0.2s ease;
-  
+
   &:hover {
     background-color: #f8f9fa;
   }
-  
+
   &:nth-child(even) {
     background-color: #fafbfc;
   }
@@ -160,7 +160,7 @@
   margin-left: 8px;
   font-size: 12px;
   transition: opacity 0.2s ease;
-  
+
   .fas {
     color: #6c757d;
   }
@@ -244,22 +244,22 @@
   min-height: 200px;
   padding: 40px 20px;
   text-align: center;
-  
+
   .empty-state-content {
     max-width: 400px;
-    
+
     .empty-state-icon {
       font-size: 48px;
       color: #dee2e6;
       margin-bottom: 16px;
     }
-    
+
     h4 {
       color: #6c757d;
       margin-bottom: 8px;
       font-weight: 600;
     }
-    
+
     p {
       color: #adb5bd;
       margin-bottom: 20px;
@@ -273,7 +273,7 @@
   font-weight: 500;
   border-radius: 6px;
   transition: all 0.2s ease;
-  
+
   &:focus {
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
   }
@@ -282,7 +282,7 @@
 .btn-success {
   background-color: #28a745;
   border-color: #28a745;
-  
+
   &:hover {
     background-color: #218838;
     border-color: #1e7e34;
@@ -292,12 +292,12 @@
 .btn-danger {
   background-color: #dc3545;
   border-color: #dc3545;
-  
+
   &:hover {
     background-color: #c82333;
     border-color: #bd2130;
   }
-  
+
   &:disabled {
     background-color: #e9ecef;
     border-color: #dee2e6;
@@ -308,7 +308,7 @@
 .btn-primary {
   background-color: #007bff;
   border-color: #007bff;
-  
+
   &:hover {
     background-color: #0056b3;
     border-color: #0056b3;
@@ -319,13 +319,13 @@
   background-color: #ffc107;
   border-color: #ffc107;
   color: #212529;
-  
+
   &:hover {
     background-color: #e0a800;
     border-color: #d39e00;
     color: #212529;
   }
-  
+
   &:disabled {
     background-color: #e9ecef;
     border-color: #dee2e6;
@@ -341,43 +341,43 @@
         margin-bottom: 15px;
       }
     }
-    
+
     .btn-group {
       display: flex;
       flex-direction: column;
-      
+
       .btn {
         margin-right: 0;
         margin-bottom: 5px;
-        
+
         &:last-child {
           margin-bottom: 0;
         }
       }
     }
-    
+
     .input-group {
       flex-direction: column;
-      
+
       .form-control {
         border-radius: 4px;
         margin-bottom: 5px;
       }
-      
+
       .btn {
         border-radius: 4px;
         margin-bottom: 5px;
-        
+
         &:last-child {
           margin-bottom: 0;
         }
       }
     }
   }
-  
+
   .excel-table {
     font-size: 12px;
-    
+
     th, td {
       padding: 6px 8px;
       min-width: 60px;
@@ -408,25 +408,25 @@
   border-radius: 8px;
   border: 1px solid #e9ecef;
   margin-bottom: 20px;
-  
+
   .btn-group {
     .btn {
       margin-right: 5px;
-      
+
       &:last-child {
         margin-right: 0;
       }
     }
   }
-  
+
   .input-group {
     .form-control {
       border-radius: 4px 0 0 4px;
     }
-    
+
     .btn {
       border-radius: 0;
-      
+
       &:last-child {
         border-radius: 0 4px 4px 0;
       }
@@ -466,7 +466,7 @@
   cursor: pointer;
   user-select: none;
   transition: all 0.2s ease;
-  
+
   &:hover {
     background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
   }
@@ -474,11 +474,11 @@
 
 .excel-table tbody tr {
   transition: background-color 0.2s ease;
-  
+
   &:hover {
     background-color: #f8f9fa;
   }
-  
+
   &:nth-child(even) {
     background-color: #fafbfc;
   }
@@ -495,7 +495,7 @@
 
 .excel-table tbody tr.row-selected {
   background-color: #e0f3ff !important;
-  
+
   td {
     background-color: #e0f3ff !important;
   }
@@ -521,7 +521,7 @@
   margin-left: 8px;
   font-size: 12px;
   transition: opacity 0.2s ease;
-  
+
   .fas {
     color: #6c757d;
   }
@@ -544,7 +544,7 @@
   color: #495057;
   border-radius: 4px;
   transition: all 0.2s ease;
-  
+
   &:focus {
     background: #ffffff;
     box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
@@ -561,7 +561,7 @@
   outline: none;
   background: transparent;
   color: #495057;
-  
+
   &:focus {
     background: #ffffff;
     box-shadow: inset 0 0 0 1px #0078d4;
@@ -584,7 +584,7 @@
   color: #6c757d;
   text-align: center;
   cursor: default;
-  
+
   &:hover {
     background-color: #f8f9fa !important;
   }
@@ -594,7 +594,7 @@
 .excel-table td.editing {
   background-color: #ffffff !important;
   box-shadow: inset 0 0 0 2px #0078d4;
-  
+
   input {
     background: transparent;
   }
@@ -612,11 +612,11 @@
   z-index: 10;
   background: transparent;
   transition: background-color 0.2s ease;
-  
+
   &:hover {
     background-color: rgba(0, 120, 212, 0.3);
   }
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -628,7 +628,7 @@
     background: #dee2e6;
     border-radius: 1px;
   }
-  
+
   &:hover::after {
     background: #0078d4;
   }
@@ -653,22 +653,22 @@
   min-height: 200px;
   padding: 40px 20px;
   text-align: center;
-  
+
   .empty-state-content {
     max-width: 400px;
-    
+
     .empty-state-icon {
       font-size: 48px;
       color: #dee2e6;
       margin-bottom: 16px;
     }
-    
+
     h4 {
       color: #6c757d;
       margin-bottom: 8px;
       font-weight: 600;
     }
-    
+
     p {
       color: #adb5bd;
       margin-bottom: 20px;
@@ -682,7 +682,7 @@
   font-weight: 500;
   border-radius: 6px;
   transition: all 0.2s ease;
-  
+
   &:focus {
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
   }
@@ -691,7 +691,7 @@
 .btn-success {
   background-color: #28a745;
   border-color: #28a745;
-  
+
   &:hover {
     background-color: #218838;
     border-color: #1e7e34;
@@ -701,12 +701,12 @@
 .btn-danger {
   background-color: #dc3545;
   border-color: #dc3545;
-  
+
   &:hover {
     background-color: #c82333;
     border-color: #bd2130;
   }
-  
+
   &:disabled {
     background-color: #e9ecef;
     border-color: #dee2e6;
@@ -717,7 +717,7 @@
 .btn-primary {
   background-color: #007bff;
   border-color: #007bff;
-  
+
   &:hover {
     background-color: #0056b3;
     border-color: #0056b3;
@@ -728,13 +728,13 @@
   background-color: #ffc107;
   border-color: #ffc107;
   color: #212529;
-  
+
   &:hover {
     background-color: #e0a800;
     border-color: #d39e00;
     color: #212529;
   }
-  
+
   &:disabled {
     background-color: #e9ecef;
     border-color: #dee2e6;
@@ -750,43 +750,43 @@
         margin-bottom: 15px;
       }
     }
-    
+
     .btn-group {
       display: flex;
       flex-direction: column;
-      
+
       .btn {
         margin-right: 0;
         margin-bottom: 5px;
-        
+
         &:last-child {
           margin-bottom: 0;
         }
       }
     }
-    
+
     .input-group {
       flex-direction: column;
-      
+
       .form-control {
         border-radius: 4px;
         margin-bottom: 5px;
       }
-      
+
       .btn {
         border-radius: 4px;
         margin-bottom: 5px;
-        
+
         &:last-child {
           margin-bottom: 0;
         }
       }
     }
   }
-  
+
   .excel-table {
     font-size: 12px;
-    
+
     th, td {
       padding: 6px 8px;
       min-width: 60px;
