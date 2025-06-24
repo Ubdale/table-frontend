@@ -138,6 +138,21 @@ export class TodoComponent implements OnInit, AfterViewInit, OnDestroy {
     const headers = document.querySelectorAll(
       '.excel-table thead th.resizable-header'
     );
+    const table = document.querySelector('.excel-table') as HTMLElement;
+
+    // On initial render, table is 100% width and columns are flexible
+    if (table && this.columns.length > 0 && !table.hasAttribute('data-resized')) {
+      table.style.width = '100%';
+      headers.forEach((header) => {
+        (header as HTMLElement).style.width = '';
+      });
+      const rows = document.querySelectorAll('.excel-table tbody tr');
+      rows.forEach((row) => {
+        Array.from(row.children).forEach((cell) => {
+          (cell as HTMLElement).style.width = '';
+        });
+      });
+    }
 
     headers.forEach((headerEl, colIndex) => {
       const header = headerEl as HTMLElement;
@@ -149,9 +164,10 @@ export class TodoComponent implements OnInit, AfterViewInit, OnDestroy {
       let startWidth = 0;
 
       const onMouseMove = (e: MouseEvent) => {
-        const newWidth = Math.max(50, startWidth + (e.clientX - startX));
+        const newWidth = Math.max(24, startWidth + (e.clientX - startX));
         header.style.width = `${newWidth}px`;
 
+        // Set width for the resized column
         const rows = document.querySelectorAll('.excel-table tbody tr');
         rows.forEach((row) => {
           const cell = row.children[colIndex] as HTMLElement;
@@ -161,6 +177,16 @@ export class TodoComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.columns[colIndex]) {
           this.columns[colIndex].width = newWidth;
           this.updateColumnInDatabase(colIndex);
+        }
+
+        // After resizing, set table width to sum of all column widths in px (never 100%)
+        if (table && this.columns.length > 0) {
+          let totalWidth = 0;
+          headers.forEach((header) => {
+            totalWidth += (header as HTMLElement).offsetWidth;
+          });
+          table.style.width = `${totalWidth}px`;
+          table.setAttribute('data-resized', 'true');
         }
       };
 
