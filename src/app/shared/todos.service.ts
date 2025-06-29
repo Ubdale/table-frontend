@@ -38,7 +38,12 @@ export interface TableConfig {
   providedIn: 'root'
 })
 export class TodosService {
+  // TODO: Replace with your actual Railway backend URL
+  // Example: https://your-app-name.railway.app
   private apiUrl = 'https://table-backend.vercel.app';
+
+  // For Railway deployment, use something like:
+  // private apiUrl = 'https://your-app-name.railway.app';
 
   private todosEndpoint = `${this.apiUrl}/todo`;
   private configEndpoint = `${this.apiUrl}/table-config`;
