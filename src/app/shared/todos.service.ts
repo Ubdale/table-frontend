@@ -39,6 +39,7 @@ export interface TableConfig {
 })
 export class TodosService {
   private apiUrl = 'https://table-backend.vercel.app';
+
   private todosEndpoint = `${this.apiUrl}/todo`;
   private configEndpoint = `${this.apiUrl}/table-config`;
 
